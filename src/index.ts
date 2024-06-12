@@ -37,6 +37,8 @@ class ExampleScene extends Scene
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
 
+        player.body.setGravityY(300)
+
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -56,6 +58,8 @@ class ExampleScene extends Scene
             frameRate: 10,
             repeat: -1
         });
+
+        this.physics.add.collider(player, platforms);
     }
 
     public update()
