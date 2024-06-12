@@ -2,9 +2,11 @@ import "phaser";
 import {Game, Scene} from "phaser";
 import StaticGroup = Phaser.Physics.Arcade.StaticGroup;
 import SpriteWithDynamicBody = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 
 var platforms: StaticGroup;
 var player: SpriteWithDynamicBody;
+var cursors: CursorKeys;
 
 class ExampleScene extends Scene
 {
@@ -37,8 +39,6 @@ class ExampleScene extends Scene
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
 
-        player.body.setGravityY(300)
-
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -60,11 +60,35 @@ class ExampleScene extends Scene
         });
 
         this.physics.add.collider(player, platforms);
+
+        cursors = this.input.keyboard!.createCursorKeys();
     }
 
     public update()
     {
+        if (cursors.left.isDown)
+        {
+            player.setVelocityX(-160);
 
+            player.anims.play('left', true);
+        }
+        else if (cursors.right.isDown)
+        {
+            player.setVelocityX(160);
+
+            player.anims.play('right', true);
+        }
+        else
+        {
+            player.setVelocityX(0);
+
+            player.anims.play('turn');
+        }
+
+        if (cursors.up.isDown && player.body.touching.down)
+        {
+            player.setVelocityY(-330);
+        }
     }
 }
 
