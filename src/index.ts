@@ -11,8 +11,10 @@ var platforms: StaticGroup;
 var player: SpriteWithDynamicBody;
 var cursors: CursorKeys;
 var stars: Group;
-var score = 0;
+var score    = 0;
 var scoreText: Text;
+var bombs: Group;
+var gameOver = false;
 
 class ExampleScene extends Scene
 {
@@ -84,11 +86,21 @@ class ExampleScene extends Scene
 
         this.physics.add.overlap(player, stars, collectStar as any, undefined, this);
 
-        scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', color: '#000' });
+        scoreText = this.add.text(16, 16, 'score: 0', {fontSize: '32px', color: '#000'});
+
+        bombs = this.physics.add.group();
+
+        this.physics.add.collider(bombs, platforms);
+
+        this.physics.add.collider(player, bombs, hitBomb as any, undefined, this);
     }
 
     public update()
     {
+        if (gameOver) {
+            return;
+        }
+
         if (cursors.left.isDown) {
             player.setVelocityX(-160);
 
@@ -123,9 +135,33 @@ const game = new Game({
     },
 });
 
-function collectStar (player: SpriteWithDynamicBody, star: SpriteWithStaticBody)
+function collectStar(player: SpriteWithDynamicBody, star: SpriteWithStaticBody)
 {
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
+
+    if (stars.countActive(true) === 0) {
+        stars.children.iterate(function (child: SpriteWithStaticBody)
+        {
+            child.enableBody(true, child.x, 0, true, true);
+        } as any);
+
+        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+        var bomb = bombs.create(x, 16, 'bomb');
+        bomb.setBounce(1);
+        bomb.setCollideWorldBounds(true);
+        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    }
+}
+
+function hitBomb(this: Phaser.Scene, player: SpriteWithDynamicBody, bomb: SpriteWithStaticBody)
+{
+    this.physics.pause();
+
+    player.setTint(0xff0000);
+    player.anims.play('turn');
+
+    gameOver = true;
 }
