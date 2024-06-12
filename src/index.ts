@@ -5,11 +5,14 @@ import SpriteWithDynamicBody = Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 import Group = Phaser.GameObjects.Group;
 import SpriteWithStaticBody = Phaser.Types.Physics.Arcade.SpriteWithStaticBody;
+import Text = Phaser.GameObjects.Text;
 
 var platforms: StaticGroup;
 var player: SpriteWithDynamicBody;
 var cursors: CursorKeys;
 var stars: Group;
+var score = 0;
+var scoreText: Text;
 
 class ExampleScene extends Scene
 {
@@ -80,6 +83,8 @@ class ExampleScene extends Scene
         this.physics.add.collider(stars, platforms);
 
         this.physics.add.overlap(player, stars, collectStar as any, undefined, this);
+
+        scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', color: '#000' });
     }
 
     public update()
@@ -121,4 +126,6 @@ const game = new Game({
 function collectStar (player: SpriteWithDynamicBody, star: SpriteWithStaticBody)
 {
     star.disableBody(true, true);
+    score += 10;
+    scoreText.setText('Score: ' + score);
 }
