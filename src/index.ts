@@ -1,3 +1,4 @@
+import "./styles.scss";
 import "phaser";
 import {Game, Scene} from "phaser";
 import StaticGroup = Phaser.Physics.Arcade.StaticGroup;
