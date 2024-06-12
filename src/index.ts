@@ -29,6 +29,7 @@ class ExampleScene extends Scene
             'assets/dude.png',
             {frameWidth: 32, frameHeight: 48}
         );
+        this.load.spritesheet('fullscreen', 'assets/ui/fullscreen.png', {frameWidth: 64, frameHeight: 64});
     }
 
     public create()
@@ -94,6 +95,32 @@ class ExampleScene extends Scene
         this.physics.add.collider(bombs, platforms);
 
         this.physics.add.collider(player, bombs, hitBomb as any, undefined, this);
+
+        const button = this.add.image(800 - 16, 16, 'fullscreen', 0).setOrigin(1, 0).setInteractive();
+
+        button.on('pointerup', function (this: ExampleScene)
+        {
+            if (this.scale.isFullscreen) {
+                button.setFrame(0);
+                this.scale.stopFullscreen();
+            } else {
+                button.setFrame(1);
+                this.scale.startFullscreen();
+            }
+        }, this);
+
+        const FKey = this.input.keyboard!.addKey('F');
+
+        FKey.on('down', function (this: ExampleScene)
+        {
+            if (this.scale.isFullscreen) {
+                button.setFrame(0);
+                this.scale.stopFullscreen();
+            } else {
+                button.setFrame(1);
+                this.scale.startFullscreen();
+            }
+        }, this);
     }
 
     public update()
@@ -125,11 +152,11 @@ class ExampleScene extends Scene
 const game = new Game({
     type   : Phaser.AUTO,
     scene  : ExampleScene,
-    scale: {
-        mode: Phaser.Scale.FIT,
+    scale  : {
+        mode      : Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 800,
-        height: 600
+        width     : 800,
+        height    : 600
     },
     physics: {
         default: 'arcade',
